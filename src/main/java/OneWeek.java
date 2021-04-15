@@ -14,10 +14,15 @@ public class OneWeek {
 		Date currentDate = new Date();
 		Calendar cal = Calendar.getInstance();
 		cal.setLenient(false);
+		int interval = 6;
 		
 		try {
 			startDate = format.parse(start);
 			endDate = format.parse(end);
+			cal.setTime(endDate);
+			cal.add(Calendar.DATE, -interval);
+			endDate = cal.getTime();
+			cal.setTime(startDate);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -25,10 +30,11 @@ public class OneWeek {
 		ArrayList<Date[]> weekList = new ArrayList<>();
 		currentDate = startDate;
 		while (currentDate.before(endDate)) {
-			cal.setTime(currentDate);
-			Date startWeek = cal.getTime();
-			cal.add(Calendar.DATE, 6);
-			Date endWeek = cal.getTime();
+			Calendar local_calendar = Calendar.getInstance();
+			local_calendar.setTime(currentDate);
+			Date startWeek = local_calendar.getTime();
+			local_calendar.add(Calendar.DATE, interval);
+			Date endWeek = local_calendar.getTime();
 //			weekList.add(new String[] {format.format(startWeek), format.format(endWeek)});
 			weekList.add(new Date[] {(startWeek), (endWeek)});
 

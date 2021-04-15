@@ -7,8 +7,6 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.logging.SimpleFormatter;
-
 public class FlightAutomation {
 	File priceFile = new File("PriceFile.txt");
 
@@ -34,7 +32,10 @@ public class FlightAutomation {
 
 	public void start() {
 		ArrayList<Date[]> weeks = OneWeek.getOneWeekIntervals(Main.StartDate, Main.EndDate);
-
+		for(Date[] week : weeks){
+			System.out.println(week[0].toString());
+			System.out.println(week[1].toString());
+		}
 		for (String city : Main.Cities) {
 			HashMap<String, Integer> prices = new HashMap<>();
 			for (Date[] dayPair : weeks) {
