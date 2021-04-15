@@ -6,6 +6,10 @@ import org.openqa.selenium.support.ui.Wait;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -13,6 +17,8 @@ import java.util.*;
 import java.util.function.Function;
 
 public class FlightAutomation {
+
+
     File priceFile = new File("PriceFile.txt");
 
     PrintWriter pw = new PrintWriter(priceFile);
@@ -41,7 +47,7 @@ public class FlightAutomation {
 
     }
 
-    public void start() {
+    public void start() throws SQLException {
         ArrayList<Date[]> weeks = OneWeek.getOneWeekIntervals(Main.StartDate, Main.EndDate);
         for (Date[] week : weeks) {
             System.out.println(week[0].toString());
@@ -64,8 +70,10 @@ public class FlightAutomation {
             }
             System.out.println(prices.toString());
             Map.Entry<String,Integer> lowestPair = prices.entrySet().stream().min( (x, y) -> Integer.compare(x.getValue(), y.getValue())).get();
-            System.out.println("\nLowest price flight ($" + price + ") to " + city + " departs on " + lowestPair.getKey()+"\n");
+            String leavingDate = lowestPair.getKey();
+            System.out.println("\nLowest price flight ($" + price + ") to " + city + " departs on " + leavingDate +"\n");
             pw.println("Lowest price flight ($" + price + ") to" + city + " departs on " + lowestPair.getKey());
+            addRowToFlightTable(city, leavingDate, price);
         }
         pw.close();
     }
@@ -212,6 +220,26 @@ public class FlightAutomation {
                 }
 
             }
+        }
+    }
+
+    //setting up the DB
+    private static Connection connection;
+    private static final String DB_URL = "jdbc:sqlite:flight";
+
+
+    public static void addRowToFlightTable(String city, String leavingDate, int price) throws SQLException {
+        connection = DriverManager.getConnection(DB_URL);
+        String sql = "insert into flight (city, departDate, price) values (?,?,?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, city);
+            ps.setString(2, leavingDate);
+            ps.setInt(3, price);
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

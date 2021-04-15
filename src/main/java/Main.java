@@ -3,6 +3,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.io.FileNotFoundException;
+import java.sql.SQLException;
 
 public class Main {
 	
@@ -27,7 +28,7 @@ public class Main {
 //	public static final String EndDate = "8/15/2021";  // August 15, 2021
 	public static final String EndDate = "5/12/2021";  // August 15, 2021
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, SQLException {
 		System.setProperty("webdriver.chrome.driver", "chromedriver");
 		driver = new ChromeDriver();
 
