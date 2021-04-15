@@ -19,9 +19,11 @@ public class OneWeek {
 		try {
 			startDate = format.parse(start);
 			endDate = format.parse(end);
+			// calculate the end date to be before interval
 			cal.setTime(endDate);
 			cal.add(Calendar.DATE, -interval);
 			endDate = cal.getTime();
+			// reset calculate date to the start date
 			cal.setTime(startDate);
 		} catch (ParseException e) {
 			e.printStackTrace();

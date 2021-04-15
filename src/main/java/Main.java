@@ -10,7 +10,7 @@ public class Main {
 	public static final String URL = "https://www.expedia.com/";
 	
 	public static final String[] Cities = new String[] {
-		"New Orleans",
+		"Cancun",
 		"Las Vegas",
 		"Denver",
 		"Rome",
@@ -24,8 +24,9 @@ public class Main {
 	public static final String DepartureCity = "Atlanta";
 	
 	public static final String StartDate = "5/1/2021";  // May 1, 2021
-	public static final String EndDate = "8/15/2021";  // August 15, 2021
-	
+//	public static final String EndDate = "8/15/2021";  // August 15, 2021
+	public static final String EndDate = "5/12/2021";  // August 15, 2021
+
 	public static void main(String[] args) throws FileNotFoundException {
 		System.setProperty("webdriver.chrome.driver", "chromedriver");
 		driver = new ChromeDriver();
