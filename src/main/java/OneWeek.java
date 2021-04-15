@@ -1,3 +1,4 @@
+import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -6,8 +7,8 @@ import java.util.Date;
 
 public class OneWeek {
 	
-	public static ArrayList<String[]> getOneWeekIntervals(String start, String end) {
-		var format = new SimpleDateFormat("MM/dd/yyyy");
+	public static ArrayList<Date[]> getOneWeekIntervals(String start, String end) {
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		Date startDate = new Date();
 		Date endDate = new Date();
 		Date currentDate = new Date();
@@ -21,15 +22,16 @@ public class OneWeek {
 			e.printStackTrace();
 		}
 		
-		var weekList = new ArrayList<String[]>();
+		ArrayList<Date[]> weekList = new ArrayList<>();
 		currentDate = startDate;
 		while (currentDate.before(endDate)) {
 			cal.setTime(currentDate);
-			var startWeek = cal.getTime();
+			Date startWeek = cal.getTime();
 			cal.add(Calendar.DATE, 6);
-			var endWeek = cal.getTime();
-			weekList.add(new String[] {format.format(startWeek), format.format(endWeek)});
-			
+			Date endWeek = cal.getTime();
+//			weekList.add(new String[] {format.format(startWeek), format.format(endWeek)});
+			weekList.add(new Date[] {(startWeek), (endWeek)});
+
 			cal.add(Calendar.DATE, 1);
 			currentDate = cal.getTime();
 		}
