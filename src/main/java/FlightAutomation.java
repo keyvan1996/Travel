@@ -6,6 +6,9 @@ import org.openqa.selenium.support.ui.Wait;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -51,21 +54,41 @@ public class FlightAutomation {
             HashMap<String, Integer> prices = new HashMap<>();
             for (Date[] dayPair : weeks) {
                 System.out.println("Searching for flights to " + city + " leaving " + dayPair[0] + " and returning on " + dayPair[1]);
-                driver.get(Main.URL);
 
-                goToFlightPage();
-                setLocations(city);
-                setDates(dayPair[0], dayPair[1]);
+                /*
+                Makes url with query params that specify locations, dates, non-stop filter
+                 */
+                String new_url = composeURL(city, dayPair[0], dayPair[1]);
+                driver.get(new_url);
+
+                /*
+                used for Selenium GUI date, location selection
+                 */
+//                goToFlightPage();
+//                setLocations(city);
+//                setDates(dayPair[0], dayPair[1]);
+//                driver.findElement(By.xpath(Paths.SearchButton)).click();
 
 
-                driver.findElement(By.xpath(Paths.SearchButton)).click();
                 price = (int) getCheapestPrice();
-                prices.put(dayPair[0].toString(), price);
+                // in this case, there were no flights found that satisfy our parameters
+                if (price != Integer.MAX_VALUE) {
+                    prices.put(OneWeek.getStringFromDate(dayPair[0]), price);
+                }
             }
             System.out.println(prices.toString());
-            Map.Entry<String,Integer> lowestPair = prices.entrySet().stream().min( (x, y) -> Integer.compare(x.getValue(), y.getValue())).get();
-            System.out.println("\nLowest price flight ($" + price + ") to " + city + " departs on " + lowestPair.getKey()+"\n");
-            pw.println("Lowest price flight ($" + price + ") to" + city + " departs on " + lowestPair.getKey());
+            Optional<Map.Entry<String, Integer>> lowestPair = prices.entrySet().stream().min((x, y) -> Integer.compare(x.getValue(), y.getValue()));
+            if(lowestPair.isPresent()){
+                String text = "Lowest price flight ($" + lowestPair.get().getValue() + ") to " + city + " departs on " + lowestPair.get().getKey();
+                System.out.println(text);
+                pw.println(text);
+            }else{
+                String text = "Couldn't find any flights from Atlanta to "+ city+" between "+OneWeek.getStringFromDate(weeks.get(0)[0])+
+                        " and " + OneWeek.getStringFromDate(weeks.get(weeks.size()-1)[1]);
+                System.out.println(text);
+                pw.println(text);
+            }
+
         }
         pw.close();
     }
@@ -76,7 +99,7 @@ public class FlightAutomation {
             flightsButton.click();
         } catch (StaleElementReferenceException e) {
             System.out.println(e);
-        }catch(ElementClickInterceptedException err){
+        } catch (ElementClickInterceptedException err) {
             System.out.println("perhaps QSI modal window was found");
             handleQSI();
         }
@@ -142,36 +165,40 @@ public class FlightAutomation {
     }
 
     private double getCheapestPrice() {
-        WebElement PriceLI = wait.until((driver) -> driver.findElement(By.xpath(Paths.FirstPriceResult)));
         double price = Double.MAX_VALUE;
-        boolean failedAttempt = false;
-        for(String price_xpath: Paths.PriceSpansLocations){
-            try {
-                WebElement price_span = PriceLI.findElement(By.xpath(price_xpath));
-                price = Double.parseDouble(price_span.getText().replace("$", "").replace(",", ""));
-                if(failedAttempt){
-                    System.out.println("Finally got the price for you: "+ price);
+        try {
+            WebElement PriceLI = wait.until((driver) -> driver.findElement(By.xpath(Paths.FirstPriceResult)));
+            boolean failedAttempt = false;
+            for (String price_xpath : Paths.PriceSpansLocations) {
+                try {
+                    WebElement price_span = PriceLI.findElement(By.xpath(price_xpath));
+                    price = Double.parseDouble(price_span.getText().replace("$", "").replace(",", ""));
+                    if (failedAttempt) {
+                        System.out.println("Finally got the price for you: " + price);
+                    }
+                    return price;
+                } catch (NoSuchElementException err) {
+                    failedAttempt = true;
+                    System.out.println("Couldn't get the price. Maybe flight is in High Demand or there is a special deal.\nTrying again");
                 }
-                return price;
-            } catch (NoSuchElementException err) {
-                failedAttempt = true;
-                System.out.println("Couldn't get the price. Maybe flight is in High Demand or there is a special deal.\nTrying again");
             }
+        } catch (Exception exception) {
+            System.out.println("Something is not right. Maybe there are not non-stop flights. It is an exceptional situation.");
+            System.out.println(exception.getMessage());
         }
         System.out.println("Couldn't get the price this time");
         return price;
     }
 
-    private void handleQSI(){
-        try{
+    private void handleQSI() {
+        try {
             WebElement QSImodal = driver.findElement(By.cssSelector(Paths.QSIModal));
-            try{
+            try {
                 QSImodal.findElement(By.xpath(Paths.CloseQSIButton)).click();
-            }catch(NoSuchElementException err){
+            } catch (NoSuchElementException err) {
                 System.out.println("couldn't close the modal");
             }
-        }
-        catch(NoSuchElementException err){
+        } catch (NoSuchElementException err) {
 
         }
     }
@@ -213,5 +240,38 @@ public class FlightAutomation {
 
             }
         }
+
     }
+
+    public String composeURL(String destination, Date start, Date end) {
+        String url = "";
+        try {
+            String end_date = OneWeek.getStringFromDate(end);
+            String start_date = OneWeek.getStringFromDate(start);
+            url = ("https://www.expedia.com/Flights-Search?filters=" +
+                    URLEncoder.encode(Main.NON_STOP_FILTER, "UTF-8") +
+                    "&leg1=" +
+                    URLEncoder.encode("from:Atlanta,GA,to:" + destination + ",departure:" + start_date + "TANYT", "UTF-8") +
+                    "&leg2=" + URLEncoder.encode("from:" + destination + " ,to:Atlanta,GA,departure:" + end_date + "TANYT", "UTF-8") +
+                    "&mode=search&options=" +
+                    URLEncoder.encode("carrier:*,maxhops:1", "UTF-8") +
+                    "&passengers=" +
+                    URLEncoder.encode("adults:1,children:0", "UTF-8") +
+                    "&sortOrder=INCREASING&sortType=PRICE&trip=roundtrip")
+                    .replace("%26", "&").replace("+", "%20");
+        } catch (java.io.UnsupportedEncodingException err) {
+            System.out.println(err.getMessage());
+        }
+
+        return url;
+    }
+
+
+    /*
+    %3A = :
+    %20 = " " blank space
+    %2C = , comma
+    %28 = (
+    %29 = )
+     */
 }

@@ -15,7 +15,7 @@ public class OneWeek {
 		Calendar cal = Calendar.getInstance();
 		cal.setLenient(false);
 		int interval = 6;
-		
+
 		try {
 			startDate = format.parse(start);
 			endDate = format.parse(end);
@@ -31,7 +31,7 @@ public class OneWeek {
 		
 		ArrayList<Date[]> weekList = new ArrayList<>();
 		currentDate = startDate;
-		while (currentDate.before(endDate)) {
+		while (!currentDate.after(endDate)) {
 			Calendar local_calendar = Calendar.getInstance();
 			local_calendar.setTime(currentDate);
 			Date startWeek = local_calendar.getTime();
@@ -45,5 +45,9 @@ public class OneWeek {
 		}
 		
 		return weekList;
+	}
+	public static String getStringFromDate(Date date){
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		return format.format(date);
 	}
 }

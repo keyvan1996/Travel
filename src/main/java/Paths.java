@@ -28,4 +28,5 @@ public class Paths {
 
 	public static final String CloseQSIButton = ".//div[2]/div/div[1]/button";
 	public static final String QSIModal = "body > div.QSIWebResponsive";
+	//https://www.expedia.com/Flights-Search?flight-type=on&mode=search&trip=roundtrip&leg1=from%3Aatlanta%2Cto%3Arome%2Cdeparture%3A5%2F1%2F2021TANYT&options=cabinclass%3Aeconomy&leg2=from%3Arome%2Cto%3Aatlanta%2Cdeparture%3A5%2F7%2F2021TANYT&passengers=children%3A0%2Cadults%3A1%2Cseniors%3A0%2Cinfantinlap%3AY&fromDate=5%2F1%2F2021&toDate=5%2F7%2F2021&d1=2021-05-01&d2=2021-05-07
 }
