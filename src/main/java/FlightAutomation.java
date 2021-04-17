@@ -48,7 +48,7 @@ public class FlightAutomation {
 
     }
 
-    public void start() {
+    public void start() throws SQLException {
         ArrayList<Date[]> weeks = OneWeek.getOneWeekIntervals(Main.StartDate, Main.EndDate);
         for (Date[] week : weeks) {
             System.out.println(week[0].toString());
