@@ -3,6 +3,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.io.FileNotFoundException;
+import java.sql.SQLException;
 import java.io.UnsupportedEncodingException;
 
 
@@ -11,7 +12,7 @@ public class Main {
 	public static WebDriver driver;
 	public static final String URL = "https://www.expedia.com/";
 	public static final String NON_STOP_FILTER = "[{\"numOfStopFilterValue\":{\"stopInfo\":{\"stopFilterOperation\":\"EQUAL\",\"numberOfStops\":0}}}]";
-	
+
 	public static final String[] Cities = new String[] {
 		"Cancun",
 		"Las Vegas",
@@ -31,7 +32,7 @@ public class Main {
 //	public static final String EndDate = "5/12/2021";  // August 15, 2021
 	public static final String EndDate = "5/9/2021";  // August 15, 2021
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException, SQLException {
 		System.setProperty("webdriver.chrome.driver", "chromedriver");
 		driver = new ChromeDriver();
 
@@ -48,7 +49,7 @@ public class Main {
 		flightAutomation.pw.println("New Line");
 		flightAutomation.pw.close();
 
-		driver.close();
+//		driver.close();
 	}
 
 }

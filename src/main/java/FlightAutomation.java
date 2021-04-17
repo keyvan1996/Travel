@@ -6,6 +6,10 @@ import org.openqa.selenium.support.ui.Wait;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +17,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.function.Function;
+
 
 public class FlightAutomation {
     File priceFile = new File("PriceFile.txt");
@@ -54,6 +58,7 @@ public class FlightAutomation {
             HashMap<String, Integer> prices = new HashMap<>();
             for (Date[] dayPair : weeks) {
                 System.out.println("Searching for flights to " + city + " leaving " + dayPair[0] + " and returning on " + dayPair[1]);
+                driver.get(Main.URL);
 
                 /*
                 Makes url with query params that specify locations, dates, non-stop filter
@@ -69,7 +74,7 @@ public class FlightAutomation {
 //                setDates(dayPair[0], dayPair[1]);
 //                driver.findElement(By.xpath(Paths.SearchButton)).click();
 
-
+                driver.findElement(By.xpath(Paths.SearchButton)).click();
                 price = (int) getCheapestPrice();
                 // in this case, there were no flights found that satisfy our parameters
                 if (price != Integer.MAX_VALUE) {
@@ -82,6 +87,7 @@ public class FlightAutomation {
                 String text = "Lowest price flight ($" + lowestPair.get().getValue() + ") to " + city + " departs on " + lowestPair.get().getKey();
                 System.out.println(text);
                 pw.println(text);
+                addRowToFlightTable(city, lowestPair.get().getKey(), price);
             }else{
                 String text = "Couldn't find any flights from Atlanta to "+ city+" between "+OneWeek.getStringFromDate(weeks.get(0)[0])+
                         " and " + OneWeek.getStringFromDate(weeks.get(weeks.size()-1)[1]);
@@ -99,7 +105,7 @@ public class FlightAutomation {
             flightsButton.click();
         } catch (StaleElementReferenceException e) {
             System.out.println(e);
-        } catch (ElementClickInterceptedException err) {
+        }catch(ElementClickInterceptedException err){
             System.out.println("perhaps QSI modal window was found");
             handleQSI();
         }
@@ -193,12 +199,13 @@ public class FlightAutomation {
     private void handleQSI() {
         try {
             WebElement QSImodal = driver.findElement(By.cssSelector(Paths.QSIModal));
-            try {
+            try{
                 QSImodal.findElement(By.xpath(Paths.CloseQSIButton)).click();
-            } catch (NoSuchElementException err) {
+            }catch(NoSuchElementException err){
                 System.out.println("couldn't close the modal");
             }
-        } catch (NoSuchElementException err) {
+        }
+        catch(NoSuchElementException err){
 
         }
     }
@@ -240,7 +247,6 @@ public class FlightAutomation {
 
             }
         }
-
     }
 
     public String composeURL(String destination, Date start, Date end) {
@@ -265,13 +271,24 @@ public class FlightAutomation {
 
         return url;
     }
+    //setting up the DB
+    private static Connection connection;
+    private static final String DB_URL = "jdbc:sqlite:flight";
 
 
-    /*
-    %3A = :
-    %20 = " " blank space
-    %2C = , comma
-    %28 = (
-    %29 = )
-     */
+    public static void addRowToFlightTable(String city, String leavingDate, int price) throws SQLException {
+        connection = DriverManager.getConnection(DB_URL);
+        String sql = "insert into flight (city, departDate, price) values (?,?,?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, city);
+            ps.setString(2, leavingDate);
+            ps.setInt(3, price);
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
