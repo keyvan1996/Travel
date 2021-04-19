@@ -5,32 +5,34 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class Main {
 	
 	public static WebDriver driver;
 	public static final String URL = "https://www.expedia.com/";
-	public static final String NON_STOP_FILTER = "[{\"numOfStopFilterValue\":{\"stopInfo\":{\"stopFilterOperation\":\"EQUAL\",\"numberOfStops\":0}}}]";
 
-	public static final String[] Cities = new String[] {
-		"Cancun",
-		"Las Vegas",
-		"Denver",
-		"Rome",
-		"Milan",
-		"Paris",
-		"Madrid",
-		"Amsterdam",
-		"Singapore"
-	};
+
+	public static final List<String> Cities = new ArrayList<>(Arrays.asList(
+			"Cancun"
+//			"Las Vegas",
+//			"Denver",
+//			"Rome",
+//			"Milan",
+//			"Paris",
+//			"Madrid",
+//			"Amsterdam",
+//			"Singapore"
+	)) ;
 	
 	public static final String DepartureCity = "Atlanta";
-	
+
 	public static final String StartDate = "5/1/2021";  // May 1, 2021
-//	public static final String EndDate = "8/15/2021";  // August 15, 2021
-//	public static final String EndDate = "5/12/2021";  // August 15, 2021
-	public static final String EndDate = "5/9/2021";  // August 15, 2021
+	public static final String EndDate = "5/15/2021";  // August 15, 2021
+	public static final int INTERVAL = 6;
 
 	public static void main(String[] args) throws FileNotFoundException, SQLException {
 		System.setProperty("webdriver.chrome.driver", "chromedriver");
@@ -45,9 +47,7 @@ public class Main {
 
 
 		FlightAutomation flightAutomation = new FlightAutomation(driver);
-		flightAutomation.start();
-		flightAutomation.pw.println("New Line");
-		flightAutomation.pw.close();
+		flightAutomation.start(StartDate, EndDate, Cities, INTERVAL);
 
 //		driver.close();
 	}

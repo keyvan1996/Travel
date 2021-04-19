@@ -1,29 +1,23 @@
-import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class OneWeek {
+public class DateHelper {
 	
-	public static ArrayList<Date[]> getOneWeekIntervals(String start, String end) {
+	public static ArrayList<Date[]> getOneWeekIntervals(String start, String end, int interval) {
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		Date startDate = new Date();
 		Date endDate = new Date();
-		Date currentDate = new Date();
+		Date currentDate;
 		Calendar cal = Calendar.getInstance();
 		cal.setLenient(false);
-		int interval = 6;
-
 		try {
 			startDate = format.parse(start);
-			endDate = format.parse(end);
-			// calculate the end date to be before interval
-			cal.setTime(endDate);
-			cal.add(Calendar.DATE, -interval);
-			endDate = cal.getTime();
-			// reset calculate date to the start date
+
+			endDate = calculateEndDateWithInterval(format.parse(end), interval);
+
 			cal.setTime(startDate);
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -37,14 +31,18 @@ public class OneWeek {
 			Date startWeek = local_calendar.getTime();
 			local_calendar.add(Calendar.DATE, interval);
 			Date endWeek = local_calendar.getTime();
-//			weekList.add(new String[] {format.format(startWeek), format.format(endWeek)});
 			weekList.add(new Date[] {(startWeek), (endWeek)});
-
 			cal.add(Calendar.DATE, 1);
 			currentDate = cal.getTime();
 		}
-		
 		return weekList;
+	}
+
+	private static Date calculateEndDateWithInterval(Date endDate, int interval){
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(endDate);
+		cal.add(Calendar.DATE, -interval);
+		return cal.getTime();
 	}
 	public static String getStringFromDate(Date date){
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
