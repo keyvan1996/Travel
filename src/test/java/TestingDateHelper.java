@@ -8,7 +8,7 @@ import java.util.Date;
 public class TestingDateHelper {
     @Test
     public void testOneWeekIntervalBeginning(){
-        ArrayList<Date[]> dates =  DateHelper.getOneWeekIntervals("05/01/2021", "05/07/2021", 6);
+        ArrayList<Date[]> dates =  DateHelper.getDateIntervals("05/01/2021", "05/07/2021", 6);
         Assert.assertEquals("Comparing start date month: ",Calendar.MAY , dates.get(0)[0].getMonth());
         Assert.assertEquals("Comparing start date day: ",  1, dates.get(0)[0].getDate());
         Assert.assertEquals("Comparing start date year: ",  2021, 1900+dates.get(0)[0].getYear());
@@ -18,7 +18,7 @@ public class TestingDateHelper {
     }
     @Test
     public void testOneWeekIntervalEnd(){
-        ArrayList<Date[]> dates =  DateHelper.getOneWeekIntervals("05/01/2021", "08/15/2021", 6);
+        ArrayList<Date[]> dates =  DateHelper.getDateIntervals("05/01/2021", "08/15/2021", 6);
         Assert.assertEquals("Comparing last interval start date month: ",Calendar.AUGUST , dates.get(dates.size()-1)[0].getMonth());
         Assert.assertEquals("Comparing last interval start date day: ",  9, dates.get(dates.size()-1)[0].getDate());
         Assert.assertEquals("Comparing last interval start date year: ",  2021, 1900+dates.get(dates.size()-1)[0].getYear());
@@ -28,7 +28,7 @@ public class TestingDateHelper {
     }
     @Test
     public void testOneWeekIntervalMonthChange(){
-        ArrayList<Date[]> dates =  DateHelper.getOneWeekIntervals("05/31/2021", "08/15/2021", 6);
+        ArrayList<Date[]> dates =  DateHelper.getDateIntervals("05/31/2021", "08/15/2021", 6);
         Assert.assertEquals("Comparing month change start date month: ",Calendar.MAY , dates.get(0)[0].getMonth());
         Assert.assertEquals("Comparing month change start date day: ",  31, dates.get(0)[0].getDate());
         Assert.assertEquals("Comparing month change start date year: ",  2021, 1900+dates.get(0)[0].getYear());

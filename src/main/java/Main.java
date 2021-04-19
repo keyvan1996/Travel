@@ -17,7 +17,8 @@ public class Main {
 
 
 	public static final List<String> Cities = new ArrayList<>(Arrays.asList(
-			"Cancun"
+//			"Cancun",
+"New York"
 //			"Las Vegas",
 //			"Denver",
 //			"Rome",
@@ -30,8 +31,8 @@ public class Main {
 	
 	public static final String DepartureCity = "Atlanta";
 
-	public static final String StartDate = "5/1/2021";  // May 1, 2021
-	public static final String EndDate = "5/15/2021";  // August 15, 2021
+	public static final String StartDate = "10/1/2021";  // May 1, 2021
+	public static final String EndDate = "10/15/2021";  // August 15, 2021
 	public static final int INTERVAL = 6;
 
 	public static void main(String[] args) throws FileNotFoundException, SQLException {

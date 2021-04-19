@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class DateHelper {
 	
-	public static ArrayList<Date[]> getOneWeekIntervals(String start, String end, int interval) {
+	public static ArrayList<Date[]> getDateIntervals(String start, String end, int interval) {
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		Date startDate = new Date();
 		Date endDate = new Date();
