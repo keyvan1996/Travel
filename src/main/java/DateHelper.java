@@ -5,7 +5,15 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateHelper {
-	
+
+	/**
+	 * this method is being use to split the the time into a week intervals which means the leaving date and arriving date is
+	 * six days apart. EX: flight leaving flight is on May 1st and arriving flight is on May 7th.
+	 * @param start day that you want to start the search form
+	 * @param end day that you want to end the search
+	 * @param interval
+	 * @return
+	 */
 	public static ArrayList<Date[]> getDateIntervals(String start, String end, int interval) {
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		Date startDate = new Date();
@@ -22,7 +30,6 @@ public class DateHelper {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
 		ArrayList<Date[]> weekList = new ArrayList<>();
 		currentDate = startDate;
 		while (!currentDate.after(endDate)) {
@@ -44,6 +51,7 @@ public class DateHelper {
 		cal.add(Calendar.DATE, -interval);
 		return cal.getTime();
 	}
+
 	public static String getStringFromDate(Date date){
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		return format.format(date);

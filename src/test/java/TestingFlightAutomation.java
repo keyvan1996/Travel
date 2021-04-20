@@ -84,6 +84,10 @@ public class TestingFlightAutomation {
         Assert.assertEquals("Testing correct price: ", Integer.valueOf(996), price_dates.getKey());
     }
 
+    /**
+     * this method test whether or not thte AddingtoDB method works properly and adding the finding results to the database
+     * @throws SQLException
+     */
     @Test
     public void testAddingToDB() throws SQLException {
         int db_size_before = flightAuto.getDbSize();

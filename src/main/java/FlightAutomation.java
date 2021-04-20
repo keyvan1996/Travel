@@ -6,8 +6,6 @@ import org.openqa.selenium.support.ui.Wait;
 import java.sql.*;
 import java.net.URLEncoder;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.Date;
 
@@ -55,15 +53,6 @@ public class FlightAutomation {
                  */
                 String new_url = composeURL(city, dayPair[0], dayPair[1]);
                 getPage(new_url);
-
-                /*
-                used for Selenium GUI date, location selection
-                 */
-//                goToFlightPage();
-//                setLocations(city);
-//                setDates(dayPair[0], dayPair[1]);
-//                driver.findElement(By.xpath(Paths.SearchButton)).click();
-
                 price = (int) getCheapestPrice();
                 // in this case, there were no flights found that satisfy our parameters
                 if (price != Integer.MAX_VALUE) {
@@ -111,7 +100,6 @@ public class FlightAutomation {
         } catch (java.io.UnsupportedEncodingException err) {
             System.out.println(err.getMessage());
         }
-
         return url;
     }
 
@@ -207,69 +195,11 @@ public class FlightAutomation {
         catch(NoSuchElementException err){
         }
     }
-    /*
-    Below methods were used in the previous build and now are depricated
-    Yet, they still work
+
+    /**
+     * this method finds the cheapest price from the non stop flight for the specified cities from the date given to the program
+     * @return
      */
-    private void goToFlightPage() {
-        try {
-            WebElement flightsButton = driver.findElement(By.xpath(Paths.FlightButton));
-            flightsButton.click();
-        } catch (StaleElementReferenceException e) {
-            System.out.println(e);
-        }catch(ElementClickInterceptedException err){
-            System.out.println("perhaps QSI modal window was found");
-            handleQSI();
-        }
-    }
-
-    private void setLocations(String arrival) {
-        try {
-            WebElement departureInputButton = driver.findElement(By.xpath("//*[@id=\"wizard-flight-tab-roundtrip\"]/div[2]/div[1]/div/div[1]/div/div/div/button"));
-            departureInputButton.click();
-
-            WebElement departLoc = driver.findElement(By.xpath(Paths.DepartureAirportDropdown));
-            clearField(departLoc);
-            departLoc.sendKeys(Main.DepartureCity);
-            departLoc.sendKeys(Keys.ENTER);
-            WebElement arrivalInputButton = driver.findElement(By.xpath("//*[@id=\"wizard-flight-tab-roundtrip\"]/div[2]/div[1]/div/div[2]/div/div/div/button"));
-            arrivalInputButton.click();
-            WebElement arriveLoc = driver.findElement(By.xpath(Paths.ArrivalAirportDropdown));
-            clearField(arriveLoc);
-            arriveLoc.sendKeys(arrival);
-            arriveLoc.sendKeys(Keys.ENTER);
-        } catch (StaleElementReferenceException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private void setDates(Date start, Date end) {
-        try {
-            WebElement a = driver.findElement(By.xpath("//*[@id=\"d1-btn\"]"));
-            a.click();
-            WebElement departDate = driver.findElement(By.xpath(Paths.DepartureDateBox));
-            selectDate(start);
-            selectDate(end);
-            WebElement done = driver.findElement(By.xpath("//*[@id=\"app-layer-datepicker-flights-departure-arrival-start\"]/div[2]/div/div/div[3]/button"));
-            done.click();
-        } catch (StaleElementReferenceException e) {
-            System.out.println(e.getMessage());
-            driver.close();
-
-        }
-    }
-
-
-    private void clearField(WebElement element) {
-        try {
-            element.click();
-            element.clear();
-            element.sendKeys(Keys.CONTROL, "a", Keys.BACK_SPACE);
-        } catch (StaleElementReferenceException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public double getCheapestPrice() {
         double price = Double.MAX_VALUE;
         try {
@@ -295,48 +225,4 @@ public class FlightAutomation {
         System.out.println("Couldn't get the price this time");
         return price;
     }
-
-
-
-    private void selectDate(Date date) {
-        LocalDate date_local = LocalDate.from(date.toInstant().atZone(ZoneId.systemDefault())).atStartOfDay().toLocalDate();
-        String departMonth = date_local.getMonth().toString();
-        String departYear = String.valueOf(date_local.getYear());
-        int departDay = date_local.getDayOfMonth();
-        String depart_month_year = departMonth + " " + departYear;
-        //locate all boxes with all months
-        List<WebElement> all_months = driver.findElement(By.xpath("//*[@id=\"app-layer-datepicker-flights-departure-arrival-start\"]/div[2]/div/div/div[2]/div")).findElements(By.xpath("./div"));
-        for (WebElement month_element : all_months) {
-            // get the month and year value of the current month_element
-            String month_name_year = month_element.findElement(By.xpath("./*[@class='uitk-date-picker-month-name uitk-type-medium']")).getText().toUpperCase();
-            //check if the month and year match the date we specified
-            if (depart_month_year.equals(month_name_year)) {
-
-                // locate all table cells in the current month
-                // it usually would be equals to number of days in that month + 1 for an empty space
-                List<WebElement> dates_elements = month_element.findElements(By.xpath(".//td"));
-
-                //find the button that matches our date
-                for (WebElement date_element : dates_elements) {
-                    try {
-                        WebElement button_date = date_element.findElement(By.xpath(".//button"));
-
-                        int day = Integer.parseInt(button_date.getAttribute("data-day"));
-                        if (day == departDay) {
-                            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", button_date);
-                            button_date.click();
-
-                        }
-                    } catch (NoSuchElementException err) {
-//                        System.out.println(err.getMessage());
-                    }
-
-                }
-
-            }
-        }
-    }
-
-
-
 }
